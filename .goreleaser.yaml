@@ -1,0 +1,50 @@
+# .goreleaser.yml
+
+# Build configuration
+builds:
+  - main: ./cmd/main.go
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+# Archive configuration
+archives:
+  - format: tar.gz
+
+# Checksums configuration
+checksums:
+  - algorithm: sha256
+
+# Docker configuration
+docker_images:
+  - image: ghcr.io/dcristobalhMad/kube-secrets-exporter
+    dockerfile: Dockerfile
+    skip_push: false
+    tags:
+      - latest
+      - "{{.Version}}"
+
+# GitHub Releases configuration
+release:
+  github:
+    owner: dcristobalhMad
+    name: kube-secrets-exporter
+
+# Changelog configuration
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+# Hooks configuration
+hooks:
+  - id: pre_release
+    commands:
+      - make test
+      - make lint
