@@ -1,50 +1,40 @@
-# .goreleaser.yml
+project_name: kube-secrets-exporter
 
-# Build configuration
 builds:
-  - main: ./cmd/main.go
+  - env: [CGO_ENABLED=0]
     goos:
       - linux
-      - darwin
-      - windows
     goarch:
       - amd64
-      - arm64
+    main: ./cmd/main.go
 
-# Archive configuration
-archives:
-  - format: tar.gz
+# config the checksum filename
+# https://goreleaser.com/customization/checksum
+checksum:
+  name_template: "checksums.txt"
 
-# Checksums configuration
-checksums:
-  - algorithm: sha256
+# create a source tarball
+# https://goreleaser.com/customization/source/
+source:
+  enabled: true
 
-# Docker configuration
-docker_images:
-  - image: ghcr.io/dcristobalhMad/kube-secrets-exporter
+# creates SBOMs of all archives and the source tarball using syft
+# https://goreleaser.com/customization/sbom
+sboms:
+  - artifacts: archive
+  - id: source # Two different sbom configurations need two different IDs
+    artifacts: source
+
+dockers:
+  - image_templates:
+      ["ghcr.io/dcristobalhMad/kube-secrets-exporter:{{ .Version }}"]
     dockerfile: Dockerfile
-    skip_push: false
-    tags:
-      - latest
-      - "{{.Version}}"
-
-# GitHub Releases configuration
-release:
-  github:
-    owner: dcristobalhMad
-    name: kube-secrets-exporter
-
-# Changelog configuration
-changelog:
-  sort: asc
-  filters:
-    exclude:
-      - "^docs:"
-      - "^test:"
-
-# Hooks configuration
-hooks:
-  - id: pre_release
-    commands:
-      - make test
-      - make lint
+    build_flag_templates:
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.description={{ .ProjectName }}
+      - --label=org.opencontainers.image.url=https://github.com/dcristobalhMad/kube-secrets-exporter
+      - --label=org.opencontainers.image.source=https://github.com/dcristobalhMad/kube-secrets-exporter
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=MIT
