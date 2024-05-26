@@ -4,9 +4,15 @@ builds:
   - env: [CGO_ENABLED=0]
     goos:
       - linux
+      - darwin
     goarch:
       - amd64
+      - arm64
     main: ./cmd/main.go
+    binary: kube-secrets-exporter
+
+# ensures mod timestamp to be the commit timestamp
+mod_timestamp: "{{ .CommitTimestamp }}"
 
 # config the checksum filename
 # https://goreleaser.com/customization/checksum
@@ -27,7 +33,7 @@ sboms:
 
 dockers:
   - image_templates:
-      ["ghcr.io/dcristobalhMad/kube-secrets-exporter:{{ .Version }}"]
+      ["ghcr.io/dcristobalhmad/kube-secrets-exporter:{{ .Version }}"]
     dockerfile: Dockerfile
     build_flag_templates:
       - --label=org.opencontainers.image.title={{ .ProjectName }}
