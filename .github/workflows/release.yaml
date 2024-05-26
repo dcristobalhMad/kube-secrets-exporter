@@ -29,6 +29,9 @@ jobs:
     needs: test
     permissions:
       contents: write
+      packages: write
+      metadata: write
+      attestations: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -40,4 +43,4 @@ jobs:
         with:
           hooks: goreleaser
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_GHCR }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
