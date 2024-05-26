@@ -11,8 +11,8 @@ builds:
     main: ./cmd/main.go
     binary: kube-secrets-exporter
 
-# ensures mod timestamp to be the commit timestamp
-mod_timestamp: "{{ .CommitTimestamp }}"
+    #  ensures mod timestamp to be the commit timestamp
+    mod_timestamp: "{{ .CommitTimestamp }}"
 
 # config the checksum filename
 # https://goreleaser.com/customization/checksum
