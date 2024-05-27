@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-secrets-exporter
+  namespace: monitoring
+  labels:
+    app: kube-secrets-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kube-secrets-exporter
+  template:
+    metadata:
+      labels:
+        app: kube-secrets-exporter
+    spec:
+      serviceAccountName: kube-secrets-exporter-sa
+      containers:
+        - name: kube-secrets-exporter
+          image: ghcr.io/dcristobalhmad/kube-secrets-exporter:1.2.0
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10

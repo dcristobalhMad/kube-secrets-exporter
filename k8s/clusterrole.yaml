@@ -1,0 +1,11 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kube-secrets-exporter-cr
+  namespace: monitoring
+  labels:
+    app: kube-secrets-exporter
+rules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["*"]
