@@ -1,7 +1,7 @@
 # Define variables
 CLUSTER_NAME = prometheus-cluster
 NAMESPACE = monitoring
-IMAGE_NAME = ghcr.io/dcristobalhmad/kube-secrets-exporter
+IMAGE_NAME = myapp
 DOCKERFILE = Dockerfile
 MANIFESTS_DIR = k8s/
 
@@ -11,9 +11,9 @@ KUBECTL = kubectl
 HELM = helm
 GO = go
 
-.PHONY: all build test kind-cluster deploy-prometheus apply-manifests clean
+.PHONY: all build test kind-cluster deploy-prometheus deploy-mimir apply-manifests clean
 
-all: kind-cluster deploy-prometheus apply-manifests
+all: kind-cluster deploy-prometheus deploy-mimir apply-manifests
 
 build:
 	@echo "Building Docker image..."
@@ -36,8 +36,9 @@ deploy-prometheus:
 	@echo "Creating namespace '$(NAMESPACE)'..."
 	$(KUBECTL) create namespace $(NAMESPACE)
 
-	@echo "Deploying kube-prometheus-stack..."
-	$(HELM) install prometheus-stack prometheus-community/kube-prometheus-stack --namespace $(NAMESPACE)
+	@echo "Deploying kube-prometheus-stack with remote write to Mimir..."
+	$(HELM) install prometheus-stack prometheus-community/kube-prometheus-stack --namespace $(NAMESPACE) \
+	--set prometheus.prometheusSpec.remoteWrite[0].url=http://mimir-distributor.monitoring.svc.cluster.local:8080/api/v1/push
 
 	@echo "Waiting for Prometheus and Grafana pods to be ready..."
 	$(KUBECTL) wait --namespace $(NAMESPACE) \
@@ -52,6 +53,29 @@ deploy-prometheus:
 	@echo "Retrieving Grafana URL..."
 	GRAFANA_URL=$$($(KUBECTL) get svc --namespace $(NAMESPACE) prometheus-stack-grafana -o jsonpath="{.status.loadBalancer.ingress[0].hostname}"); \
 	echo "Grafana URL: http://$$GRAFANA_URL"
+
+deploy-mimir:
+	@echo "Adding Grafana Helm repository..."
+	$(HELM) repo add grafana https://grafana.github.io/helm-charts
+	$(HELM) repo update
+
+	@echo "Deploying Grafana Mimir..."
+	$(HELM) install mimir grafana/mimir-distributed --namespace $(NAMESPACE) \
+	--set distributor.replicaCount=1 \
+	--set ingester.replicaCount=1 \
+	--set querier.replicaCount=1 \
+	--set store-gateway.replicaCount=1 \
+	--set compactor.replicaCount=1 \
+	--set alertmanager.replicaCount=1 \
+	--set ruler.replicaCount=1 \
+	--set metaMonitoring.enabled=true \
+	--set metaMonitoring.serviceMonitor.enabled=true
+
+	@echo "Waiting for Mimir pods to be ready..."
+	$(KUBECTL) wait --namespace $(NAMESPACE) \
+	  --for=condition=ready pod \
+	  --selector=app.kubernetes.io/name=mimir \
+	  --timeout=5m
 
 apply-manifests:
 	@echo "Applying Kubernetes manifests from $(MANIFESTS_DIR)..."
