@@ -38,7 +38,7 @@ deploy-prometheus:
 
 	@echo "Deploying kube-prometheus-stack with remote write to Mimir..."
 	$(HELM) install prometheus-stack prometheus-community/kube-prometheus-stack --namespace $(NAMESPACE) \
-	--set prometheus.prometheusSpec.remoteWrite[0].url=http://mimir-distributor.monitoring.svc.cluster.local:8080/api/v1/push
+	--set prometheus.prometheusSpec.remoteWrite[0].url=http://mimir-nginx.monitoring.svc:80/api/v1/push
 
 	@echo "Waiting for Prometheus and Grafana pods to be ready..."
 	$(KUBECTL) wait --namespace $(NAMESPACE) \
