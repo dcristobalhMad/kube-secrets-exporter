@@ -12,27 +12,27 @@ var (
 	SecretModificationTime = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "kube_secret_last_modified_time",
-			Help: "The Unix timestamp of the last modification time of the secret.",
+			Help: "Last modification time of Kubernetes secrets in Unix timestamp",
 		},
-		[]string{"namespace", "secret_name", "modification_timestamp"},
+		[]string{"namespace", "secret_name", "date", "timestamp"},
 	)
 	SecretScanDuration = prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Name: "kube_secret_scan_duration_seconds",
-			Help: "Duration of the last scan for checking secret modifications in seconds.",
+			Help: "Duration of the scan for checking secret modifications",
 		},
 	)
 	SecretModifications = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "kube_secret_modifications_total",
-			Help: "Total number of modifications detected in secrets.",
+			Help: "Total number of modifications detected in secrets",
 		},
-		[]string{"namespace", "secret_name", "modification_timestamp"},
+		[]string{"namespace", "secret_name", "date", "timestamp"},
 	)
 	LastScanSuccess = prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Name: "kube_secret_last_scan_success",
-			Help: "Indicates if the last scan was successful (1 for success, 0 for failure).",
+			Help: "Indicates if the last scan was successful (1 for success, 0 for failure)",
 		},
 	)
 	LastModificationTimes = make(map[string]time.Time)

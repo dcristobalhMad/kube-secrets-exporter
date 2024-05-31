@@ -28,14 +28,14 @@ func worker(id int, clientset *kubernetes.Clientset, namespaces <-chan string, w
 			}
 			modificationTime := secret.GetCreationTimestamp().Time
 
-			year, month, day := modificationTime.Date()
-			hour := modificationTime.Hour()
-			timestampLabel := fmt.Sprintf("%d-%02d-%02dT%02d", year, month, day, hour)
+			// Format modification time as date string
+			modificationDate := modificationTime.Format("2006-01-02 15:04:05")
 
 			labels := prometheus.Labels{
-				"namespace":              ns,
-				"secret_name":            secret.Name,
-				"modification_timestamp": timestampLabel,
+				"namespace":   ns,
+				"secret_name": secret.Name,
+				"date":        modificationDate,
+				"timestamp":   fmt.Sprintf("%d", modificationTime.Unix()), // keep Unix timestamp for reference
 			}
 
 			metrics.Mu.Lock()
