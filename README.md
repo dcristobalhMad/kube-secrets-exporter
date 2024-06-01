@@ -1,3 +1,6 @@
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/kube-secrets-exporter)](https://artifacthub.io/packages/search?repo=kube-secrets-exporter)
+[![Release](https://github.com/dcristobalhMad/kube-secrets-exporter/actions/workflows/release.yaml/badge.svg?branch=master)](https://github.com/dcristobalhMad/kube-secrets-exporter/actions/workflows/release.yaml)
+
 # kube-secrets-exporter
 
 kube-secrets-exporter is a Prometheus exporter written in Go that retrieves information about Kubernetes secrets and exposes metrics for monitoring. It allows you to track the last modification time of secrets, scan duration, and the number of modifications detected in secrets.
