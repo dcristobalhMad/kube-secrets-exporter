@@ -1,0 +1,16 @@
+apiVersion: v1
+entries:
+  kube-secrets-exporter:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2024-06-01T12:31:50.584165903Z"
+    description: A Helm chart for Kubernetes
+    digest: 6290c034e9e213b0eef2fee8361178d83b43806a2be0a777e47d3b66994baaf9
+    maintainers:
+    - name: dcristobalhMad
+    name: kube-secrets-exporter
+    type: application
+    urls:
+    - https://github.com/dcristobalhMad/kube-secrets-exporter/releases/download/kube-secrets-exporter-0.1.0/kube-secrets-exporter-0.1.0.tgz
+    version: 0.1.0
+generated: "2024-06-01T12:31:50.584190899Z"
