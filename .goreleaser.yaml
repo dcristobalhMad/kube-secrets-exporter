@@ -33,7 +33,10 @@ sboms:
 
 dockers:
   - image_templates:
-      ["ghcr.io/dcristobalhmad/kube-secrets-exporter:{{ .Version }}"]
+      [
+        "ghcr.io/dcristobalhmad/kube-secrets-exporter:{{ .Version }}",
+        "ghcr.io/dcristobalhmad/kube-secrets-exporter:latest"
+      ]
     dockerfile: Dockerfile.releaser
     build_flag_templates:
       - --label=org.opencontainers.image.title={{ .ProjectName }}
